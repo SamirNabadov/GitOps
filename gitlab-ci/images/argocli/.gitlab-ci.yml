@@ -1,0 +1,29 @@
+stages:
+  - image_build
+  - push
+
+image_build_job:
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  stage: image_build
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"${CI_GITLAB_REGISTRY_URL}\":{\"auth\":\"$(echo -n ${CI_GITLAB_REGISTRY_USERNAME}:${CI_GITLAB_REGISTRY_PASSWORD}| base64)\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor   --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --insecure --skip-tls-verify  --destination ${CI_GITLAB_REGISTRY_URL}\/${CI_PROJECT_NAMESPACE}\/${CI_PROJECT_NAME}:latest
+  tags:
+    - k8s-runner
+  only:
+    - dev
+
+push_job:
+  image: gitlab.eurodesign.az:4567/devops/images/argocli:latest
+  stage: push
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - argocd version &
+  tags:
+    - k8s-runner
+  only:
+    - dev

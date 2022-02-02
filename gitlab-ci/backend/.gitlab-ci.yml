@@ -1,0 +1,15 @@
+include:
+ - project: '${CI_PROJECT_TEMPLATE}'
+   file: .gitlab-ci.yml
+
+gradle_build_job:
+  extends: .gradle_build_job
+
+image_build_job:
+  extends: .image_build_job
+
+push_to_helm_job:
+  extends: .push_to_helm_job
+
+argocd_sync_job:
+  extends: .argocd_sync_job

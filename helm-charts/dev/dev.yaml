@@ -1,0 +1,148 @@
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+# Define just your repository name:
+dockerRegistry: gitlab.local.az:4567
+imagePullSecrets: regcred
+
+replicaCount: 1
+
+image:
+  name: projects/demo/front-app
+  tag: 886
+  pullPolicy: IfNotPresent
+
+secrets:
+  enabled: false
+  vaults:
+    - name: VAULT_ROLE_ID
+      valueFrom:
+        name: secret-vault
+        key: VAULT_ROLE_ID
+    - name: VAULT_SECRET_ID
+      valueFrom:
+        name: secret-vault
+        key: VAULT_SECRET_ID
+
+configmaps:
+  enabled: false
+  data:
+    - key: CONFIG_KEY
+      value: CONFIG_DATA
+
+# Default Container Termination Time
+terminationGracePeriodSeconds: 30
+
+# Container  Port
+ports:
+  enabled: true
+  containerPort: 5000
+
+hostsfile:
+  enabled: false
+  records:
+    - name: example.local
+      ip: 127.0.0.1
+    - name: testing.local
+      ip: 127.0.0.2
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 443
+
+# App Rolling Update
+strategy:
+  enabled: true
+  type: RollingUpdate
+  rollingUpdate: #Update Pods a certain number at a time
+    maxUnavailable: 0 #Total number of pods that can be unavailable at once
+    maxSurge: 1 #Maximum number of pods that can be deployed above desired state
+minReadySeconds: 5 # After readyness probe wait 5 second and start rolling deploy app
+revisionHistoryLimit: 1
+
+hpa:
+  enabled: false
+  minReplicas: "1"
+  maxReplicas: "3"
+  cpuUtilization: "90"
+  memoryUtilization: "1Gi"
+
+resources:
+  enabled: true
+  limits:
+    memory: 1Gi
+    cpu: 1
+  requests:
+    cpu: 500m
+    memory: 500Mi
+
+readinessProbe:
+  enabled: false
+  httpGet:
+    path: actuator/health
+    port: 8080
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 2
+  failureThreshold: 1
+  successThreshold: 1
+
+livenessProbe:
+  enabled: false
+  httpGet:
+    path: /
+    port: 8080
+  initialDelaySeconds: 70
+  periodSeconds: 20
+  timeoutSeconds: 2
+  failureThreshold: 1
+  successThreshold: 1
+
+ingress:
+  enabled: true
+  hostname: dev.front-app.demo.local.az
+  tls: true
+  routes: 
+    - route: /
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    #nginx.ingress.kubernetes.io/proxy-body-size: 100m
+    # kubernetes.io/tls-acme: "true"
+
+env:
+- name: HOST
+  valueFrom:
+    fieldRef:
+      fieldPath: status.hostIP
+- name: TZ
+  value: 'Asia/Baku'
+- name: APP_ENV
+  value: 'dev'
+
+hostpathVolume:
+  enabled: false
+  mountPath: /share
+  type: Directory
+  name: testhostpath
+
+volumeMounts:
+  enabled: false
+  mountPath: /mnt  # mount path inside of container
+  name: shared          # mount name 
+  claimName: glusterfs-pvc    # pvc name
+
+nameOverride: ""
+fullnameOverride: ""
+
+podSecurityContext: {}
+  # fsGroup: 2000
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+nodeSelector: {}
+tolerations: []
+affinity: {}

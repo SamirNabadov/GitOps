@@ -1,0 +1,94 @@
+stages:
+  - package
+  - image_build
+  - push_to_helm
+  - argocd_sync
+  - deploy_to_expo
+
+.gradle_build_job:
+  image: gradle:jdk17-alpine
+  stage: package
+  script:
+    - gradle build -x test
+  artifacts:
+    paths:
+      - build/libs/
+    expire_in: 1 week
+  tags:
+    - k8s-runner
+  only:
+    - dev
+    - uat
+    - prod
+
+.image_build_job:
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  stage: image_build
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"${CI_GITLAB_REGISTRY_URL}\":{\"auth\":\"$(echo -n ${CI_GITLAB_REGISTRY_USERNAME}:${CI_GITLAB_REGISTRY_PASSWORD}| base64)\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor   --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --insecure --skip-tls-verify  --destination ${CI_GITLAB_REGISTRY_URL}\/${CI_PROJECT_NAMESPACE}\/${CI_PROJECT_NAME}:$CI_PIPELINE_ID
+  tags:
+    - k8s-runner
+  only:
+    - dev
+    - uat
+    - prod
+
+.push_to_helm_job:
+  image:
+    name: bitnami/git:latest
+    entrypoint: [""]
+  stage: push_to_helm
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - CI_PROJECT_NAMESPACE=$(echo $CI_PROJECT_NAMESPACE | awk -F '/' '{print $2}')
+    - git -c http.sslVerify=false clone "https://${CI_GITLAB_USERNAME}:${CI_GITLAB_PASSWORD}@${CI_SERVER_HOST}/${CD_GITLAB_PROJECT}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}.git" -b ${CI_COMMIT_BRANCH}
+    - cd ${CI_PROJECT_NAME}
+    - git config --global user.email "${GIT_USER_EMAIL:-$GITLAB_USER_EMAIL}"
+    - git config --global user.name "${GIT_USER_NAME:-$GITLAB_USER_NAME}"
+    - sed -i "s/tag:.*/tag:\ ${CI_PIPELINE_ID}/" ${CI_COMMIT_BRANCH}.yaml
+    - git add ${CI_COMMIT_BRANCH}.yaml && git commit -m "Add new tag ${CI_PIPELINE_ID}" && git -c http.sslVerify=false push origin ${CI_COMMIT_BRANCH}
+  tags:
+    - k8s-runner
+  only:
+    - dev
+    - uat
+    - prod
+
+.argocd_sync_job:
+  image: gitlab.local.az:4567/images/argocli:latest
+  stage: argocd_sync
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - CI_PROJECT_NAMESPACE=$(echo $CI_PROJECT_NAMESPACE | awk -F '/' '{print $2}')
+    - argocd --insecure login ${CD_ARGOCD_URL} --username ${CD_ARGOCD_USERNAME} --password ${CD_ARGOCD_PASSWORD}
+    - argocd app sync ${CI_COMMIT_BRANCH}-${CI_PROJECT_NAME}-${CI_PROJECT_NAMESPACE} & 
+  tags:
+    - k8s-runner
+  only:
+    - dev
+    - uat
+    - prod
+
+.deploy_to_expo:
+  image: gitlab.local.az:4567/images/expocli:latest
+  stage: deploy_to_expo
+  script:
+    - expo login -u ${EXPO_USERNAME} -p ${EXPO_PASSWORD}
+    - yarn add expo@42.0.0
+    - yarn add @unimodules/core
+    - yarn add @unimodules/react-native-adapter
+    - expo ba -t apk --non-interactive --no-wait  --release-channel ${CI_COMMIT_BRANCH}
+    - expo bi -t simulator --non-interactive --no-wait --release-channel ${CI_COMMIT_BRANCH}
+    - expo build:status
+  tags:
+    - k8s-runner
+  only:
+    - dev
+    - uat
+    - prod

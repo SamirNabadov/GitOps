@@ -1,0 +1,11 @@
+project: demo
+source:
+  repoURL: 'https://gitlab.local.az/cicd/demo/front-app.git'
+  path: .
+  targetRevision: prod
+  helm:
+    valueFiles:
+      - prod.yaml
+destination:
+  server: 'https://kubernetes.default.svc'
+  namespace: prod

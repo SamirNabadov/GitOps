@@ -1,0 +1,6 @@
+include:
+ - project: '${CI_PROJECT_TEMPLATE}'
+   file: .gitlab-ci.yml
+
+deploy_to_expo:
+  extends: .deploy_to_expo
