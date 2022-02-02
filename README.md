@@ -8,3 +8,4 @@ Basic settings
 * GitLab CI Pipeline
 * Kubernetes template using Helm Charts
 * Continuous Deployment using ArgoCD
+* GitOps repository structure
