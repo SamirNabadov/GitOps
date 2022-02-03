@@ -17,7 +17,7 @@ image_build_job:
     - dev
 
 push_job:
-  image: gitlab.eurodesign.az:4567/images/argocli:latest
+  image: gitlab.eurodesign.az:4567/image/argocli:latest
   stage: push
   variables:
     GIT_STRATEGY: none
