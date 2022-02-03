@@ -42,11 +42,11 @@ stages:
   - argocd_sync
   - deploy_to_expo
 
-* The package stage is undergoing the build operation.
-* The image_build stage creates an image from Dockerfile.
-* The push_to_helm stage writes a new image tag id to the helm repo.
-* The argocd_sync stage synchronizes the application in argpcd due to a change in the helm repo.
-* The deploy_to_expo stage for mobile includes build operations for both android and ios.
+The package stage is undergoing the build operation.
+The image_build stage creates an image from Dockerfile.
+The push_to_helm stage writes a new image tag id to the helm repo.
+The argocd_sync stage synchronizes the application in argpcd due to a change in the helm repo.
+The deploy_to_expo stage for mobile includes build operations for both android and ios.
 
 
 __Requirements__
