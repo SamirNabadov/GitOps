@@ -33,9 +33,7 @@ You can add variables in Gitlab at the group level from Settings -> CICD -> Vari
 * EXPO_USERNAME: expo
 * EXPO_PASSWORD: passowrd
 
-----
-
-* The following stages are for the backend, frontend and mobile. 
+The following stages are for the backend, frontend and mobile. 
 
 stages:
   - package
