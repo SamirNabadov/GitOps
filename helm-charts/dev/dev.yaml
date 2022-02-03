@@ -7,7 +7,7 @@ imagePullSecrets: regcred
 replicaCount: 1
 
 image:
-  name: projects/demo/front-app
+  name: code/demo/front-app
   tag: 886
   pullPolicy: IfNotPresent
 
