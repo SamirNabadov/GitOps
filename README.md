@@ -1,7 +1,6 @@
 # GitOps
 GitOps implementation with  GitlabCI, ArgoCD and HELM
 
-
 ![Screenshot](GitOpsImage.png)
 
 Basic settings
@@ -10,3 +9,7 @@ Basic settings
 * Kubernetes template using Helm Charts
 * Continuous Deployment using ArgoCD
 * GitOps repository structure
+
+Structure
+
+![Screenshot](Topology.png)
