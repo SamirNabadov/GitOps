@@ -54,7 +54,7 @@ __Requirements__
 * Gitlab
 * ArgoCD
 * Helm
-* Expo
+* Expo account
 
 __Author Information__
 ------------------
