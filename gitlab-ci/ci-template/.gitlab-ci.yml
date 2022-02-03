@@ -60,7 +60,7 @@ stages:
     - prod
 
 .argocd_sync_job:
-  image: gitlab.local.az:4567/images/argocli:latest
+  image: gitlab.local.az:4567/image/argocli:latest
   stage: argocd_sync
   variables:
     GIT_STRATEGY: none
@@ -76,7 +76,7 @@ stages:
     - prod
 
 .deploy_to_expo:
-  image: gitlab.local.az:4567/images/expocli:latest
+  image: gitlab.local.az:4567/image/expocli:latest
   stage: deploy_to_expo
   script:
     - expo login -u ${EXPO_USERNAME} -p ${EXPO_PASSWORD}
