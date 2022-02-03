@@ -1,4 +1,6 @@
-# GitOps
+__GitOps__
+================================
+
 GitOps implementation with  GitlabCI, ArgoCD and HELM
 
 ![Screenshot](GitOpsImage.png)
@@ -10,6 +12,17 @@ Basic settings
 * Continuous Deployment using ArgoCD
 * GitOps repository structure
 
-Structure
+Gitlab repository structure
 
 ![Screenshot](Topology.png)
+
+__Requirements__
+------------
+* Gitlab
+* ArgoCD
+* Helm
+
+__Author Information__
+------------------
+
+Samir Nabadov
