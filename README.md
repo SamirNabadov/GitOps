@@ -1,7 +1,7 @@
 __GitOps__
 ================================
 
-GitOps implementation with  GitlabCI, ArgoCD, HELM
+GitOps implementation with  GitlabCI, ArgoCD, Helm
 
 ![Screenshot](GitOpsImage.png)
 
