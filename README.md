@@ -22,6 +22,7 @@ __Requirements__
 * Gitlab
 * ArgoCD
 * Helm
+* Expo
 
 __Author Information__
 ------------------
