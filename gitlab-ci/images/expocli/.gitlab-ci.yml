@@ -17,7 +17,7 @@ image_build_job:
     - dev
 
 push_job:
-  image: gitlab.eurodesign.az:4567/images/expocli:latest
+  image: gitlab.local.az:4567/image/expocli:latest
   stage: push
   variables:
     GIT_STRATEGY: none
