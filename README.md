@@ -1,7 +1,8 @@
 # GitOps
 GitOps implementation with  GitlabCI, ArgoCD and HELM
 
-[plot](./GitOpsImage.png)
+
+![Screenshot](GitOpsImage.png)
 
 Basic settings
 ------------
