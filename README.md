@@ -12,8 +12,9 @@ Basic settings
 * Continuous Deployment using ArgoCD
 * GitOps repository structure
 
-Gitlab repository structure
 
+Gitlab repository structure
+------------
 ![Screenshot](Topology.png)
 
 __Requirements__
